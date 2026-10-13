@@ -1,0 +1,149 @@
+{
+  "name": "AI E-Commerce Assistant",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ecommerce -assistant",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "83f099e7-0d18-40cd-8e7f-c4b70688db48",
+      "name": "Webhook",
+      "webhookId": "b0fda40b-e9bb-4e62-b1fe-d87304adb55d"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Find some laptops suitable for a college student",
+        "options": {
+          "systemMessage": "You are an AI Ecommerce Assistant.\n\nWhen users ask about products, use the HTTP Request tool to fetch product data.\n\nRecommend products based on:\n- Budget\n- Category\n- Rating\n- Price\n\nProvide clear and concise answers."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        224,
+        0
+      ],
+      "id": "4fcb7565-6712-4359-9262-c5c5fd0d7a55",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-20b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        96,
+        208
+      ],
+      "id": "41fbf6a0-ff3a-41a8-a350-e7404aca3ce3",
+      "name": "Groq Chat Model1",
+      "credentials": {
+        "groqApi": {
+          "id": "N3xiQfXKuZdeGknL",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"response\": \"={{ $json.output }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        592,
+        0
+      ],
+      "id": "1f0a6ab3-3e87-4a7f-ace1-fa9f3f6537fa",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "toolDescription": "\nSearch products and get product details for e-commerce recommendations.",
+        "url": "https://dummyjson.com/products?limit=5&select=id,title,price,category,description,brand",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.5,
+      "position": [
+        384,
+        208
+      ],
+      "id": "217a537b-b508-42f3-9f19-5647bfcf04c7",
+      "name": "HTTP Request"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "25c2f2f4-7ee7-4ae1-aec0-9fe3f3881b16",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "94f34593f64dfbb725ac1722312c9eec565b1f3d10b698f568bb8f0b275694f3"
+  },
+  "nodeGroups": [],
+  "id": "JUfTwtMXOwvmR8rf",
+  "tags": []
+}
